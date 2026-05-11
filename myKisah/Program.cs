@@ -5,11 +5,13 @@ using myKisah.Interfaces;
 using myKisah.Repositories;
 using myKisah.Services;
 using myKisah.Controllers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Controller
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
