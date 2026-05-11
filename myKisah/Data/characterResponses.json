@@ -1,0 +1,32 @@
+[
+  {
+    "id": "res-001",
+    "characterId": "char1-kdrama",
+    "mood": "Senang",
+    "response": "Yeay! Senang banget dengar kamu bahagia hari ini!"
+  },
+  {
+    "id": "res-002",
+    "characterId": "char1-kdrama",
+    "mood": "Sedih",
+    "response": "Tidak apa-apa merasa sedih. Aku ada di sini untukmu."
+  },
+  {
+    "id": "res-003",
+    "characterId": "char1-kdrama",
+    "mood": "Marah",
+    "response": "Tarik napas dulu. Ceritakan pelan-pelan apa yang membuatmu kesal."
+  },
+  {
+    "id": "res-004",
+    "characterId": "char1-kdrama",
+    "mood": "Cemas",
+    "response": "Wajar merasa cemas. Kita hadapi ini bersama-sama, ya."
+  },
+  {
+    "id": "res-005",
+    "characterId": "char1-kdrama",
+    "mood": "Tenang",
+    "response": "Senang mendengarnya. Pertahankan ketenangan itu hari ini."
+  }
+]
