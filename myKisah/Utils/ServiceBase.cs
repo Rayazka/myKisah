@@ -47,7 +47,6 @@ public abstract class ServiceBase
 
     protected void LogError(string message, Exception ex)
     {
-        // TODO: Tampilkan log error dengan format [ERROR] [ServiceName] message: exception
-        throw new NotImplementedException("TODO: Implement LogError");
+        Console.WriteLine($"[ERROR] [{ServiceName}] {message}: {ex.Message}");
     }
 }

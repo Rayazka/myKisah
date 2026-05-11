@@ -48,17 +48,26 @@ namespace myKisah.Utils;
 
 public class FilePathConfig
 {
-    private readonly IConfiguration _configuration;
-
-    public FilePathConfig(IConfiguration configuration)
-    {
-        // TODO: Simpan IConfiguration
-        throw new NotImplementedException("TODO: Implement constructor");
-    }
-
-    // TODO: Implement property getter — baca dari config section "StoragePaths"
-    public string UsersFile => throw new NotImplementedException("TODO: Read from config");
-    public string JournalsFile => throw new NotImplementedException("TODO: Read from config");
-    public string CharactersFile => throw new NotImplementedException("TODO: Read from config");
-    public string ResponsesFile => throw new NotImplementedException("TODO: Read from config");
+    
 }
+
+
+// public class FilePathConfig
+// {
+//     private readonly IConfiguration _configuration;
+
+//     public FilePathConfig(IConfiguration configuration)
+//     {
+//        _configuration = configuration;
+//     }
+
+//     // TODO: Implement property getter — baca dari config section "StoragePaths"
+//     public string UsersFile =>
+//         _configuration["StoragePaths:UsersFile"] ?? "Data/users.json";
+//     public string JournalsFile =>
+//         _configuration["StoragePaths:JournalsFile"] ?? "Data/journals.json";
+//     public string CharactersFile =>
+//         _configuration["StoragePaths:CharactersFile"] ?? "Data/characters.json";
+//     public string ResponsesFile =>
+//         _configuration["StoragePaths:ResponsesFile"] ?? "Data/characterResponses.json";
+// }

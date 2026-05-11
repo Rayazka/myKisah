@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace myKisah.Utils;
 
@@ -58,29 +59,72 @@ namespace myKisah.Utils;
 
 public class JsonStorageHelper
 {
-    private readonly string _basePath;
-
-    public JsonStorageHelper(FilePathConfig filePathConfig)
-    {
-        // TODO: Tentukan base path untuk file JSON
-        // _basePath = Path.Combine(Directory.GetCurrentDirectory(), "Data") atau dari config
-        throw new NotImplementedException("TODO: Implement constructor");
-    }
-
-    public List<T> ReadJson<T>(string filename)
-    {
-        // TODO: 1. Build fullPath = _basePath + filename
-        // TODO: 2. Jika file tidak ada → buat file "[]", return new List<T>()
-        // TODO: 3. Jika file ada → baca, deserialize, return
-        throw new NotImplementedException("TODO: Implement ReadJson");
-    }
-
-    public void WriteJson<T>(string filename, List<T> data)
-    {
-        // TODO: 1. Build fullPath
-        // TODO: 2. Pastikan directory exists
-        // TODO: 3. Serialize to JSON (WriteIndented)
-        // TODO: 4. Tulis ke file
-        throw new NotImplementedException("TODO: Implement WriteJson");
-    }
+    
 }
+// public class JsonStorageHelper
+// {
+//     private readonly string _basePath;
+//     private readonly IHostEnvironment _env;
+
+//     public JsonStorageHelper(FilePathConfig filePathConfig, IHostEnvironment env)
+//     {
+//         _env = env;
+//         _basePath = env.ContentRootPath; 
+//     }
+
+//     public List<T> ReadJson<T>(string filename)
+// {
+//     // 1. Gabung base path + nama file
+//     var fullPath = Path.Combine(_basePath, filename);
+//     Console.WriteLine($"[DEBUG] FullPath: {fullPath}");
+//     // 2. Kalau file belum ada → auto-create dengan array kosong
+//     if (!File.Exists(fullPath))
+//     {
+//         Console.WriteLine($"[DEBUG] File tidak ditemukan, membuat baru...");
+//         var directory = Path.GetDirectoryName(fullPath);
+//         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+//             Directory.CreateDirectory(directory);
+//         File.WriteAllText(fullPath, "[]");
+//         return new List<T>();
+//     }
+//     // 3. Baca isi file
+//     var json = File.ReadAllText(fullPath);
+//     Console.WriteLine($"[DEBUG] JSON dibaca: {(json.Length > 100 ? json.Substring(0, 100) + "..." : json)}");
+//     // 4. Kalau kosong → return empty
+//     if (string.IsNullOrWhiteSpace(json))
+//         return new List<T>();
+//     // 5. Deserialize — PAKAI JsonStringEnumConverter supaya "Happy" → MoodType.Happy
+//     var options = new JsonSerializerOptions
+//     {
+//         Converters = { new JsonStringEnumConverter() },
+//         PropertyNameCaseInsensitive = true,
+//         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+//     };
+//     var result = JsonSerializer.Deserialize<List<T>>(json, options);
+//     Console.WriteLine($"[DEBUG] Deserialized count: {result?.Count ?? 0}");
+//     return result ?? new List<T>();
+// }
+//     public void WriteJson<T>(string filename, List<T> data)
+//     {
+//         var fullPath = Path.Combine(_basePath, filename);
+//         Console.WriteLine($"[DEBUG] WriteJson FullPath: {fullPath}");
+//         Console.WriteLine($"[DEBUG] WriteJson Count: {data.Count}");
+
+//         // Pastikan folder tujuan ada
+//         var directory = Path.GetDirectoryName(fullPath);
+//         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+//             Directory.CreateDirectory(directory);
+
+//         // Serialize dengan options SAMA seperti ReadJson
+//         var options = new JsonSerializerOptions
+//         {
+//             WriteIndented = true,
+//             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+//             Converters = { new JsonStringEnumConverter() }
+//         };
+
+//         var json = JsonSerializer.Serialize(data, options);
+//         File.WriteAllText(fullPath, json);
+//         Console.WriteLine($"[DEBUG] WriteJson berhasil: {data.Count} item tersimpan");
+//     }
+// }
