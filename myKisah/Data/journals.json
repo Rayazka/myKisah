@@ -1,0 +1,29 @@
+[
+  {
+    "id": "journal-seed-001",
+    "userId": "user-seed-001",
+    "title": "Hari pertama kuliah",
+    "content": "Hari ini seru banget! Ketemu dosen baru dan teman-teman. Materi KPL cukup challenging tapi menarik.",
+    "mood": "Happy",
+    "state": "Saved",
+    "createdAt": "2025-01-15T10:00:00Z"
+  },
+  {
+    "id": "journal-seed-002",
+    "userId": "user-seed-001",
+    "title": "Deg-degan presentasi",
+    "content": "Besok presentasi CLO2. Udah siapin slide dan demo. Semoga lancar!",
+    "mood": "Anxious",
+    "state": "Draft",
+    "createdAt": "2025-01-16T14:00:00Z"
+  },
+  {
+    "id": "9ac70745-4235-40dd-8a14-24a5cf391fd9",
+    "userId": "user-seed-002",
+    "title": "ds",
+    "content": "dsfdsf",
+    "mood": "Anxious",
+    "state": "Draft",
+    "createdAt": "2026-05-12T03:06:09.9460764Z"
+  }
+]
