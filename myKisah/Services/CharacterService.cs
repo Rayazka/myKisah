@@ -1,50 +1,62 @@
-using myKisah.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using myKisah.Models;
-using myKisah.Utils;
+using myKisah.Interfaces;
 
-namespace myKisah.Services;
-
-/// <summary>
-/// Business logic untuk Character Companion.
-/// TEKNIK: TABLE-DRIVEN — GenerateResponse() lookup ke JSON via repository.
-/// TIDAK ADA IF/SWITCH di seluruh flow.
-/// </summary>
-public class CharacterService : ServiceBase, ICharacterService
+namespace myKisah.Services
 {
-    private readonly ICharacterRepository _characterRepo;
-    private readonly ICharacterResponseRepository _responseRepo;
-
-    public CharacterService(
-        ICharacterRepository characterRepo,
-        ICharacterResponseRepository responseRepo)
+    public class CharacterService : ICharacterService
     {
-        _characterRepo = characterRepo;
-        _responseRepo = responseRepo;
-    }
+        // PERUBAHAN: Gunakan interface spesifik, bukan generic IRepository<T>
+        private readonly ICharacterRepository _characterRepository;
+        private readonly ICharacterResponseRepository _responseRepository;
 
-    protected override string ServiceName => "CharacterService";
+        // Constructor
+        public CharacterService(
+            ICharacterRepository characterRepository, 
+            ICharacterResponseRepository responseRepository)
+        {
+            _characterRepository = characterRepository;
+            _responseRepository = responseRepository;
+        }
 
-    public IEnumerable<Character> GetAllCharacters()
-    {
-        return _characterRepo.GetAll();
-    }
+        public IEnumerable<Character> GetAllCharacters()
+        {
+            return _characterRepository.GetAll();
+        }
 
-    /// <summary>
-    /// INTI TABLE-DRIVEN: Lookup response dari characterResponses.json.
-    /// Validasi input → delegasi ke repository.GetByMood() → return string response.
-    /// TIDAK ADA IF/SWITCH — seluruh mapping mood→response ada di JSON file.
-    /// </summary>
-    public string GenerateResponse(string characterId, MoodType mood)
-    {
-        Validator.ValidateNotEmpty(characterId, "CharacterId");
-        Validator.ValidateInEnum(mood, "Mood");
+        public Character AssignCharacter(string characterId)
+        {
+            if (string.IsNullOrWhiteSpace(characterId))
+                throw new ArgumentNullException(nameof(characterId), "Character ID tidak boleh null atau kosong.");
 
-        var responses = _responseRepo.GetByMood(characterId, mood);
-        var response = responses.FirstOrDefault();
+            var character = _characterRepository.GetById(characterId);
+            if (character == null)
+                throw new KeyNotFoundException($"Karakter dengan ID {characterId} tidak ditemukan.");
 
-        Validator.ValidateExists(response,
-            $"Response untuk character '{characterId}' dengan mood '{mood}'");
+            return character;
+        }
 
-        return response!.Response;
+        public string GenerateResponse(string characterId, MoodType mood)
+        {
+            if (string.IsNullOrWhiteSpace(characterId))
+                throw new ArgumentNullException(nameof(characterId), "Character ID tidak boleh null.");
+
+            if (!Enum.IsDefined(typeof(MoodType), mood))
+                throw new ArgumentException("Input mood tidak valid atau tidak dikenali.", nameof(mood));
+
+            // PERUBAHAN: Karena _responseRepository (JsonCharacterResponseRepository) sudah 
+            // punya method GetByMood() khusus, kita bisa langsung menggunakannya! 
+            // Ini jauh lebih efisien daripada memanggil GetAll() lalu di-filter manual.
+            var mappedResponse = _responseRepository.GetByMood(characterId, mood).FirstOrDefault();
+
+            if (mappedResponse == null)
+            {
+                return "Maaf, aku tidak tahu harus merespons apa untuk perasaan ini.";
+            }
+
+            return mappedResponse.Response; // Pastikan 'Response' atau 'ResponseText' sesuai model Anda
+        }
     }
 }
