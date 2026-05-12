@@ -51,64 +51,65 @@ namespace myKisah.Middleware;
 // - Pakai System.Text.Json untuk serialisasi
 // - Response object anonymous type: new { error = message, statusCode }
 // - Pastikan context.Response.ContentType = "application/json"
-public class ErrorHandlingMiddleware
-{
-    
-}
 
 // public class ErrorHandlingMiddleware
 // {
-//     private readonly RequestDelegate _next;
-
-//     public ErrorHandlingMiddleware(RequestDelegate next)
-//     {
-//         _next = next;
-//     }
-
-//     public async Task InvokeAsync(HttpContext context)
-//     {
-//         try
-//         {
-//             // Jalankan middleware berikutnya / controller
-//             await _next(context);
-//         }
-//         catch (ArgumentNullException ex)
-//         {
-//             await WriteErrorResponse(context, 400, ex.Message);
-//         }
-//         catch (ArgumentException ex)
-//         {
-//             await WriteErrorResponse(context, 400, ex.Message);
-//         }
-//         catch (KeyNotFoundException ex)
-//         {
-//             await WriteErrorResponse(context, 404, ex.Message);
-//         }
-//         catch (InvalidOperationException ex)
-//         {
-//             await WriteErrorResponse(context, 422, ex.Message);
-//         }
-//         catch (Exception)
-//         {
-//             // Exception yang tidak dikenal → 500 tanpa detail
-//             // (jangan bocorin internal error ke client)
-//             await WriteErrorResponse(context, 500, "Internal server error.");
-//         }
-//     }
-
-//     private async Task WriteErrorResponse(HttpContext context, int statusCode, string message)
-//     {
-//         context.Response.StatusCode = statusCode;
-//         context.Response.ContentType = "application/json";
-//         var response = new { error = message, statusCode };
-//         var json = System.Text.Json.JsonSerializer.Serialize(response);
-//         await context.Response.WriteAsync(json);
-//     }
-
-
-//     private static async Task SetResponse(HttpContext context, int statusCode, string message)
-//     {
-//         // TODO: Set status code, content type, dan tulis response JSON
-//         throw new NotImplementedException("TODO: Implement SetResponse");
-//     }
+    
 // }
+
+public class ErrorHandlingMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public ErrorHandlingMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            // Jalankan middleware berikutnya / controller
+            await _next(context);
+        }
+        catch (ArgumentNullException ex)
+        {
+            await WriteErrorResponse(context, 400, ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            await WriteErrorResponse(context, 400, ex.Message);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            await WriteErrorResponse(context, 404, ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            await WriteErrorResponse(context, 422, ex.Message);
+        }
+        catch (Exception)
+        {
+            // Exception yang tidak dikenal → 500 tanpa detail
+            // (jangan bocorin internal error ke client)
+            await WriteErrorResponse(context, 500, "Internal server error.");
+        }
+    }
+
+    private async Task WriteErrorResponse(HttpContext context, int statusCode, string message)
+    {
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/json";
+        var response = new { error = message, statusCode };
+        var json = System.Text.Json.JsonSerializer.Serialize(response);
+        await context.Response.WriteAsync(json);
+    }
+
+
+    private static async Task SetResponse(HttpContext context, int statusCode, string message)
+    {
+        // TODO: Set status code, content type, dan tulis response JSON
+        throw new NotImplementedException("TODO: Implement SetResponse");
+    }
+}
