@@ -46,28 +46,28 @@ namespace myKisah.Utils;
 //
 // Referensi: Task_myKisah.md baris 140-164
 
-public class FilePathConfig
-{
-    
-}
-
-
 // public class FilePathConfig
 // {
-//     private readonly IConfiguration _configuration;
-
-//     public FilePathConfig(IConfiguration configuration)
-//     {
-//        _configuration = configuration;
-//     }
-
-//     // TODO: Implement property getter — baca dari config section "StoragePaths"
-//     public string UsersFile =>
-//         _configuration["StoragePaths:UsersFile"] ?? "Data/users.json";
-//     public string JournalsFile =>
-//         _configuration["StoragePaths:JournalsFile"] ?? "Data/journals.json";
-//     public string CharactersFile =>
-//         _configuration["StoragePaths:CharactersFile"] ?? "Data/characters.json";
-//     public string ResponsesFile =>
-//         _configuration["StoragePaths:ResponsesFile"] ?? "Data/characterResponses.json";
+    
 // }
+
+
+public class FilePathConfig
+{
+    private readonly IConfiguration _configuration;
+
+    public FilePathConfig(IConfiguration configuration)
+    {
+       _configuration = configuration;
+    }
+
+    // TODO: Implement property getter — baca dari config section "StoragePaths"
+    public string UsersFile =>
+        _configuration["StoragePaths:UsersFile"] ?? "Data/users.json";
+    public string JournalsFile =>
+        _configuration["StoragePaths:JournalsFile"] ?? "Data/journals.json";
+    public string CharactersFile =>
+        _configuration["StoragePaths:CharactersFile"] ?? "Data/characters.json";
+    public string ResponsesFile =>
+        _configuration["StoragePaths:ResponsesFile"] ?? "Data/characterResponses.json";
+}

@@ -1,7 +1,299 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+@using myKisah.Models
+@using myKisah.Interfaces
 
-<h1>Hello, world!</h1>
+@inject IUserService UserService
+@inject IJournalService JournalService
+@inject ICharacterService CharacterService
 
-Welcome to your new app.
+<PageTitle>myKisah — API Test Dashboard</PageTitle>
+
+<div class="dashboard">
+    <h1 class="dashboard-title">myKisah API Test Dashboard</h1>
+
+    @* ──────────── OUTPUT ──────────── *@
+    @if (!string.IsNullOrEmpty(_message))
+    {
+        <div class="output @(_isError ? "output-error" : "output-success")">
+            @_message
+        </div>
+    }
+
+    @* ──────────── USER ──────────── *@
+    <div class="section">
+        <h2>User Management</h2>
+
+        <div class="section-body">
+            <div class="input-row">
+                <label>Username:</label>
+                <input @bind="_userName" type="text" placeholder="Masukkan username..." />
+                <button class="btn btn-primary" @onclick="RegisterUser">Register</button>
+                <button class="btn btn-outline" @onclick="GetAllUsers">Get All Users</button>
+            </div>
+
+            @if (_users.Any())
+            {
+                <table class="data-table">
+                    <tr><th>Id</th><th>Username</th><th>Created</th><th>Action</th></tr>
+                    @foreach (var u in _users)
+                    {
+                        <tr>
+                            <td>@u.Id</td>
+                            <td>@u.Username</td>
+                            <td>@u.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td><button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(u.Id)">Delete</button></td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+
+    @* ──────────── JOURNAL ──────────── *@
+    <div class="section">
+        <h2>Journal</h2>
+
+        <div class="section-body">
+            <div class="input-row">
+                <label>UserId:</label>
+                <input @bind="_journalUserId" type="text" placeholder="user-seed-001" />
+            </div>
+            <div class="input-row">
+                <label>Title:</label>
+                <input @bind="_journalTitle" type="text" placeholder="Judul journal..." />
+            </div>
+            <div class="input-row">
+                <label>Content:</label>
+                <textarea @bind="_journalContent" placeholder="Isi journal..." rows="2"></textarea>
+            </div>
+            <div class="input-row">
+                <label>Mood:</label>
+                <select @bind="_journalMood">
+                    @foreach (var m in Enum.GetValues<MoodType>())
+                    {
+                        <option value="@m">@m</option>
+                    }
+                </select>
+                <button class="btn btn-primary" @onclick="CreateJournal">Create Journal</button>
+            </div>
+
+            <hr />
+
+            <div class="input-row">
+                <label>Filter by UserId:</label>
+                <input @bind="_journalFilter" type="text" placeholder="user-seed-001" />
+                <button class="btn btn-outline" @onclick="GetJournals">Get Journals</button>
+            </div>
+
+            @if (_journals.Any())
+            {
+                <table class="data-table">
+                    <tr><th>Id</th><th>Title</th><th>Mood</th><th>State</th><th>Action</th></tr>
+                    @foreach (var j in _journals)
+                    {
+                        <tr>
+                            <td>@Truncate(j.Id, 12)</td>
+                            <td>@j.Title</td>
+                            <td>@j.Mood</td>
+                            <td><span class="state-badge state-@j.State.ToString().ToLower()">@j.State</span></td>
+                            <td><button class="btn btn-danger btn-sm" @onclick="() => DeleteJournal(j.Id)">Delete</button></td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+    </div>
+
+    @* ──────────── CHARACTER ──────────── *@
+    <div class="section">
+        <h2>Character Companion</h2>
+
+        <div class="section-body">
+            <button class="btn btn-outline" @onclick="GetAllCharacters">Get All Characters</button>
+
+            @if (_characters.Any())
+            {
+                <table class="data-table">
+                    <tr><th>Id</th><th>Name</th><th>Description</th></tr>
+                    @foreach (var c in _characters)
+                    {
+                        <tr>
+                            <td>@c.Id</td>
+                            <td>@c.Name</td>
+                            <td>@c.Description</td>
+                        </tr>
+                    }
+                </table>
+
+                <hr />
+
+                <div class="input-row">
+                    <label>Character:</label>
+                    <select @bind="_selectedCharId">
+                        <option value="">-- Pilih --</option>
+                        @foreach (var c in _characters)
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </select>
+
+                    <label>Mood:</label>
+                    <select @bind="_charMood">
+                        @foreach (var m in Enum.GetValues<MoodType>())
+                        {
+                            <option value="@m">@m</option>
+                        }
+                    </select>
+
+                    <button class="btn btn-primary" @onclick="GetCharacterResponse">Get Response</button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_charResponse))
+                {
+                    <div class="char-response">
+                        <strong>@_characters.First(c => c.Id == _selectedCharId).Name says:</strong>
+                        <p>"@_charResponse"</p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    // ─── Message ───
+    private string _message = "";
+    private bool _isError;
+
+    // ─── User State ───
+    private string _userName = "";
+    private List<User> _users = new();
+
+    // ─── Journal State ───
+    private string _journalUserId = "";
+    private string _journalTitle = "";
+    private string _journalContent = "";
+    private MoodType _journalMood = MoodType.Happy;
+    private string _journalFilter = "";
+    private List<Journal> _journals = new();
+
+    // ─── Character State ───
+    private List<Character> _characters = new();
+    private string _selectedCharId = "";
+    private MoodType _charMood = MoodType.Happy;
+    private string _charResponse = "";
+
+    // ─── Helpers ───
+    private void ShowSuccess(string msg) { _message = msg; _isError = false; }
+    private void ShowError(string msg) { _message = msg; _isError = true; }
+    private static string Truncate(string? text, int max) =>
+        string.IsNullOrEmpty(text) ? "" : text.Length <= max ? text : text[..max] + "...";
+
+    // ═══════════════════════════════════════ USER ═══════════════════════════════════════
+
+    private async Task RegisterUser()
+    {
+        try
+        {
+            var user = UserService.RegisterUser(_userName.Trim());
+            ShowSuccess($"User berhasil didaftarkan: {user.Username} (Id: {user.Id})");
+            _userName = "";
+            await GetAllUsers();
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+    }
+
+    private Task GetAllUsers()
+    {
+        try
+        {
+            _users = UserService.GetAllUsers().ToList();
+            ShowSuccess($"{_users.Count} user ditemukan.");
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+        return Task.CompletedTask;
+    }
+
+    private async Task DeleteUser(string id)
+    {
+        try
+        {
+            UserService.DeleteUser(id);
+            ShowSuccess($"User {id} dihapus.");
+            await GetAllUsers();
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+    }
+
+    // ═══════════════════════════════════════ JOURNAL ═══════════════════════════════════
+
+    private async Task CreateJournal()
+    {
+        try
+        {
+            var journal = JournalService.CreateJournal(
+                _journalUserId.Trim(), _journalTitle.Trim(),
+                _journalContent.Trim(), _journalMood);
+
+            ShowSuccess($"Journal dibuat: {journal.Title} (State: {journal.State})");
+            _journalTitle = "";
+            _journalContent = "";
+            await GetJournals();
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+    }
+
+    private Task GetJournals()
+    {
+        try
+        {
+            _journals = JournalService.GetJournalsByUser(_journalFilter.Trim()).ToList();
+            ShowSuccess($"{_journals.Count} journal ditemukan.");
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+        return Task.CompletedTask;
+    }
+
+    private async Task DeleteJournal(string id)
+    {
+        try
+        {
+            JournalService.DeleteJournal(id);
+            ShowSuccess($"Journal {id} dihapus.");
+            await GetJournals();
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+    }
+
+    // ═══════════════════════════════════════ CHARACTER ═══════════════════════════════════
+
+    private Task GetAllCharacters()
+    {
+        try
+        {
+            _characters = CharacterService.GetAllCharacters().ToList();
+            ShowSuccess($"🎭 {_characters.Count} karakter ditemukan.");
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+        return Task.CompletedTask;
+    }
+
+    private Task GetCharacterResponse()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_selectedCharId))
+            {
+                ShowError("Pilih karakter terlebih dahulu.");
+                return Task.CompletedTask;
+            }
+
+            _charResponse = CharacterService.GenerateResponse(_selectedCharId, _charMood);
+            ShowSuccess($"Response diterima.");
+        }
+        catch (Exception ex) { ShowError($"{ex.Message}"); }
+        return Task.CompletedTask;
+    }
+}
