@@ -11,7 +11,7 @@
 Aplikasi menggunakan **layered architecture** berbasis ASP.NET Web API dengan persistensi data ke file JSON (tanpa database relasional pada tahap CLO2).
 
 ```
-MyKisah/
+myKisah/
 ├── Controllers/          # HTTP endpoint handlers (ASP.NET Web API)
 ├── Services/             # Business logic + validasi
 ├── Repositories/         # Akses dan persistensi data JSON
@@ -25,6 +25,8 @@ MyKisah/
 │   ├── characters.json
 │   └── characterResponses.json
 └── appsettings.json      # Runtime configuration (path file, aturan journal)
+├
+myKisah.Tests		# Unit & Performance Testing
 ```
 
 ### Namespace Mapping
